@@ -1,10 +1,13 @@
 import { Controller, type SubmitHandler, useForm } from 'react-hook-form';
 import Box from '@mui/material/Box';
-import { TextField } from '@mui/material';
-import { useAppDispatch } from '@store/index';
+import { TextField, Typography, Link } from '@mui/material';
+import { useAppDispatch, useAppSelector } from '@store/index';
 import { registerUser } from '../store/AuthActions';
-import { setUserName } from '../store/AuthSlice';
-import { auth } from '@services/firebase/firebase';
+import { selectAuth, setUserName } from '../store/AuthSlice';
+import AppButton from '@features/ui/AppButton';
+import { auth } from '@services/firebase';
+import { AppRoutes } from '@config/routes/AppRoutes';
+import { Navigate } from 'react-router-dom';
 
 interface FormInput {
   email: string;
@@ -14,7 +17,13 @@ interface FormInput {
 }
 
 export default function SignUpForm() {
+  const auth = useAppSelector(selectAuth);
   const { control, handleSubmit, password, onSubmit } = useSignUpForm();
+
+  if (auth.user) {
+    return <Navigate to={AppRoutes.dashboard} replace />;
+  }
+
   return (
     <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ width: '100%' }}>
       <Controller
@@ -98,7 +107,7 @@ export default function SignUpForm() {
             type="password"
             required
             fullWidth
-            id="password"
+            id="passwordRepeat"
             label="Password Repeat"
             autoComplete="passwordRepeat"
             autoFocus
@@ -109,6 +118,25 @@ export default function SignUpForm() {
           />
         )}
       />
+      <AppButton type="submit" fullwidth loading={auth.status === 'loading'} sx={{ mb: 2 }}>
+        Sign Up
+      </AppButton>
+      <Box display="flex" justifyContent="center">
+        <Typography color="text.secondary" mr={1}>
+          Do you have an account already?
+        </Typography>
+        <Link href={AppRoutes.login} variant="body2">
+          Login.
+        </Link>
+      </Box>
+      <Box display="flex" justifyContent="center">
+        <Typography color="text.secondary" mr={1}>
+          Reading as a guest!
+        </Typography>
+        <Link href={AppRoutes.home} variant="body2">
+          Read
+        </Link>
+      </Box>
     </Box>
   );
 }

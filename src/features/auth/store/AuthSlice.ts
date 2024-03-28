@@ -4,7 +4,7 @@ import { RootState } from '@store/index';
 
 interface UserInfo {
   uid: string;
-  displayname: string | null | undefined;
+  displayName: string | null | undefined;
   email: string;
 }
 
@@ -34,7 +34,7 @@ export const authSlice = createSlice({
     },
     setUserName: (state, action: PayloadAction<string | null | undefined>) => {
       if (state.user) {
-        state.user.displayname = action.payload;
+        state.user.displayName = action.payload;
       }
     },
   },
